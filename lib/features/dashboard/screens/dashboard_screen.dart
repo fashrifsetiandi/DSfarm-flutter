@@ -17,6 +17,8 @@ import '../../housing/screens/housing_list_screen.dart';
 import '../../livestock/screens/livestock_list_screen.dart';
 import '../../offspring/screens/offspring_list_screen.dart';
 import '../../breeding/screens/breeding_list_screen.dart';
+import '../../finance/screens/finance_screen.dart';
+import '../../inventory/screens/inventory_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final String farmId;
@@ -239,23 +241,19 @@ class DashboardScreen extends ConsumerWidget {
         icon: Icons.account_balance_wallet,
         label: 'Keuangan',
         color: Colors.green,
-        onTap: () {
-          // TODO: Navigate to finance
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Coming soon')),
-          );
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const FinanceScreen()),
+        ),
       ),
       _MenuItem(
         icon: Icons.inventory,
         label: 'Inventaris',
         color: Colors.brown,
-        onTap: () {
-          // TODO: Navigate to inventory
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Coming soon')),
-          );
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const InventoryScreen()),
+        ),
       ),
     ];
 

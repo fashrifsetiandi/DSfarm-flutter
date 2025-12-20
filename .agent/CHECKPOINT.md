@@ -1,7 +1,7 @@
-# 🛡️ DSFarm Flutter - Context Checkpoint
+# 🛡️ DSFarm Flutter - Checkpoint
 
-> **Generated:** 2025-12-20 19:57 JST  
-> **Status:** Week 3 COMPLETE ✅
+> **Updated:** 2025-12-21 00:25 JST  
+> **Status:** Week 4 ✅ → Week 5 in progress
 
 ---
 
@@ -9,49 +9,28 @@
 
 | Week | Status |
 |------|--------|
-| Week 1 - Auth | ✅ |
-| Week 2 - Multi-Farm | ✅ |
-| Week 3 - Kandang/Livestock | ✅ |
-| Week 4 - Offspring/Breeding | ⏳ Next |
-
----
-
-## Week 3 Files
-
-```
-lib/
-├── models/
-│   ├── housing.dart       ✅
-│   └── livestock.dart     ✅
-├── repositories/
-│   ├── housing_repository.dart   ✅
-│   └── livestock_repository.dart ✅
-├── providers/
-│   ├── housing_provider.dart     ✅
-│   └── livestock_provider.dart   ✅
-└── features/
-    ├── dashboard/    (updated with stats/menu)
-    ├── housing/      (list + create screens)
-    └── livestock/    (list + create screens)
-```
+| 1 - Auth | ✅ |
+| 2 - Multi-Farm | ✅ |
+| 3 - Kandang/Livestock | ✅ |
+| 4 - Breeding/Offspring | ✅ |
+| 5 - Finance/Inventory | 🔄 In Progress |
 
 ---
 
 ## Database Tables
 
 - `farms` ✅
+- `breeds` ✅
 - `housings` ✅
 - `livestocks` ✅
-- `breeds` ✅
+- `breeding_records` ✅
+- `offsprings` ✅
 
 ---
 
-## Next (Week 4)
+## Resume
 
-1. Offspring model & CRUD
-2. Breeding records
-3. Offspring tracking
-
----
-
-**Resume:** `cd /Users/fashrif/code/DSfarm-learnflutter && flutter run -d chrome`
+```bash
+cd /Users/fashrif/code/DSfarm-learnflutter
+flutter run -d chrome
+```
