@@ -10,7 +10,10 @@ class Housing {
   final String farmId;
   final String? blockId;   // Reference to block
   final String? blockCode; // From joined query
-  final String? position;  // Position within block (e.g., "A-01")
+  final String? position;  // Full position code (e.g., "A-01-T")
+  final int? column;       // Column number in block (1, 2, 3...)
+  final int? row;          // Row number (optional)
+  final String? level;     // Level code: A(tas), T(engah), B(awah)
   final String code;       // e.g., "K-001", "A-01"
   final String? name;
   final int capacity;
@@ -29,6 +32,9 @@ class Housing {
     this.blockId,
     this.blockCode,
     this.position,
+    this.column,
+    this.row,
+    this.level,
     required this.code,
     this.name,
     this.capacity = 1,
@@ -42,6 +48,9 @@ class Housing {
 
   /// Display name (use position if has block, otherwise code)
   String get displayName => position ?? name ?? code;
+
+  /// Get level as enum
+  HousingLevel get levelEnum => HousingLevel.fromString(level);
 
   /// Check if housing has available space
   bool get hasSpace => (currentOccupancy ?? 0) < capacity;
@@ -63,6 +72,9 @@ class Housing {
       blockId: json['block_id'] as String?,
       blockCode: json['blocks']?['code'] as String?,
       position: json['position'] as String?,
+      column: json['column_num'] as int?,
+      row: json['row_num'] as int?,
+      level: json['level'] as String?,
       code: json['code'] as String,
       name: json['name'] as String?,
       capacity: json['capacity'] as int? ?? 1,
@@ -83,6 +95,9 @@ class Housing {
       'farm_id': farmId,
       'block_id': blockId,
       'position': position,
+      'column_num': column,
+      'row_num': row,
+      'level': level,
       'code': code,
       'name': name,
       'capacity': capacity,
@@ -99,6 +114,9 @@ class Housing {
     String? blockId,
     String? blockCode,
     String? position,
+    int? column,
+    int? row,
+    String? level,
     String? code,
     String? name,
     int? capacity,
@@ -115,6 +133,9 @@ class Housing {
       blockId: blockId ?? this.blockId,
       blockCode: blockCode ?? this.blockCode,
       position: position ?? this.position,
+      column: column ?? this.column,
+      row: row ?? this.row,
+      level: level ?? this.level,
       code: code ?? this.code,
       name: name ?? this.name,
       capacity: capacity ?? this.capacity,
@@ -165,6 +186,27 @@ enum HousingStatus {
     return HousingStatus.values.firstWhere(
       (e) => e.value == value,
       orElse: () => HousingStatus.active,
+    );
+  }
+}
+
+/// Housing level enum (tingkat dalam satu posisi)
+enum HousingLevel {
+  none('', '-'),           // No level (single tier)
+  atas('A', 'Atas'),       // Top
+  tengah('T', 'Tengah'),   // Middle  
+  bawah('B', 'Bawah');     // Bottom
+
+  final String code;       // Short code for position
+  final String displayName;
+
+  const HousingLevel(this.code, this.displayName);
+
+  static HousingLevel fromString(String? value) {
+    if (value == null || value.isEmpty) return HousingLevel.none;
+    return HousingLevel.values.firstWhere(
+      (e) => e.code == value || e.name == value,
+      orElse: () => HousingLevel.none,
     );
   }
 }

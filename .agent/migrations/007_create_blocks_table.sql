@@ -19,9 +19,12 @@ DROP POLICY IF EXISTS "Users can manage own blocks" ON blocks;
 CREATE POLICY "Users can manage own blocks" ON blocks
   USING (farm_id IN (SELECT id FROM farms WHERE user_id = auth.uid()));
 
--- Update housings table to include block reference
+-- Update housings table to include block reference and level system
 ALTER TABLE housings ADD COLUMN IF NOT EXISTS block_id UUID REFERENCES blocks(id) ON DELETE SET NULL;
 ALTER TABLE housings ADD COLUMN IF NOT EXISTS position VARCHAR(20);
+ALTER TABLE housings ADD COLUMN IF NOT EXISTS column_num INT;  -- Using column_num to avoid reserved word
+ALTER TABLE housings ADD COLUMN IF NOT EXISTS row_num INT;
+ALTER TABLE housings ADD COLUMN IF NOT EXISTS level VARCHAR(5); -- A, T, B
 
 -- Index for faster queries
 CREATE INDEX IF NOT EXISTS idx_housings_block_id ON housings(block_id);

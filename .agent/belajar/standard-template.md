@@ -41,7 +41,7 @@
 ---
 
 ## 📸 Visual Changelog
-*(Save screenshots to `devlogs/assets/`)*
+*(Save screenshots to `.agent/assets/`)*
 - **Before:** ![Alt](../assets/phase-xx-before.png)
 - **After:** ![Alt](../assets/phase-xx-after.png)
 
