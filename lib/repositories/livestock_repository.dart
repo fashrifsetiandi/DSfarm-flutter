@@ -193,4 +193,42 @@ class LivestockRepository {
       Gender.female: list.where((e) => e['gender'] == 'female').length,
     };
   }
+
+  /// Generate next code for livestock
+  /// Format: [BREED_CODE]-[J/B][SEQUENCE]
+  /// Example: REX-J01, NZW-B04
+  Future<String> getNextCode({
+    required String farmId,
+    required String breedCode,
+    required Gender gender,
+  }) async {
+    final genderPrefix = gender == Gender.male ? 'J' : 'B';
+    final pattern = '$breedCode-$genderPrefix%';
+
+    // Get existing codes with this pattern
+    final response = await SupabaseService.client
+        .from(_tableName)
+        .select('code')
+        .eq('farm_id', farmId)
+        .ilike('code', pattern);
+
+    final codes = (response as List).map((e) => e['code'] as String).toList();
+
+    // Find max sequence number
+    int maxSeq = 0;
+    for (final code in codes) {
+      final parts = code.split('-');
+      if (parts.length >= 2) {
+        final seqStr = parts.last.replaceAll(RegExp(r'[^0-9]'), '');
+        final seq = int.tryParse(seqStr) ?? 0;
+        if (seq > maxSeq) maxSeq = seq;
+      }
+    }
+
+    // Generate next code with 2+ digits
+    final nextSeq = maxSeq + 1;
+    final seqStr = nextSeq.toString().padLeft(2, '0');
+    return '$breedCode-$genderPrefix$seqStr';
+  }
 }
+

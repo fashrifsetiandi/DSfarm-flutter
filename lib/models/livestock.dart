@@ -52,8 +52,8 @@ class Livestock {
     this.housingCode,
   });
 
-  /// Display name (use name if available, otherwise code)
-  String get displayName => name ?? code;
+  /// Display name is just the code
+  String get displayName => code;
 
   /// Age in days (null if birth date unknown)
   int? get ageInDays {
@@ -83,6 +83,17 @@ class Livestock {
 
   /// Check if male (for breeding purposes)
   bool get isMale => gender == Gender.male;
+
+  /// Get gender prefix for code (J = Jantan, B = Betina)
+  String get genderPrefix => gender == Gender.male ? 'J' : 'B';
+
+  /// Get sequence number from code (e.g., "REX-J01" -> "01")
+  String get sequenceNumber {
+    final parts = code.split('-');
+    if (parts.length < 2) return '01';
+    // Extract digits from "J01" or "B123"
+    return parts.last.replaceAll(RegExp(r'[^0-9]'), '');
+  }
 
   /// Create from JSON (Supabase response)
   factory Livestock.fromJson(Map<String, dynamic> json) {

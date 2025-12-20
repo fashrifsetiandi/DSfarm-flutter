@@ -1,6 +1,7 @@
 /// Create Livestock Screen
 /// 
 /// Form untuk menambah indukan/pejantan baru.
+/// Kode auto-generate berdasarkan ras dan gender: [BREED]-[J/B][SEQ]
 
 library;
 
@@ -8,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../models/livestock.dart';
-import '../../../models/housing.dart';
+import '../../../models/breed.dart';
 import '../../../providers/livestock_provider.dart';
 import '../../../providers/housing_provider.dart';
+import '../../../providers/breed_provider.dart';
+import '../../../providers/farm_provider.dart';
 
 class CreateLivestockScreen extends ConsumerStatefulWidget {
   const CreateLivestockScreen({super.key});
@@ -21,8 +24,6 @@ class CreateLivestockScreen extends ConsumerStatefulWidget {
 
 class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _codeController = TextEditingController();
-  final _nameController = TextEditingController();
   final _weightController = TextEditingController();
   final _priceController = TextEditingController();
   final _notesController = TextEditingController();
@@ -30,18 +31,43 @@ class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
   Gender _selectedGender = Gender.female;
   AcquisitionType _selectedAcquisition = AcquisitionType.purchased;
   String? _selectedHousingId;
+  String? _selectedBreedId;
+  Breed? _selectedBreed;
+  String _generatedCode = '';
   DateTime? _birthDate;
   DateTime? _acquisitionDate;
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _codeController.dispose();
-    _nameController.dispose();
     _weightController.dispose();
     _priceController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _updateGeneratedCode() async {
+    if (_selectedBreed == null) {
+      setState(() => _generatedCode = '');
+      return;
+    }
+
+    try {
+      final repository = ref.read(livestockRepositoryProvider);
+      final farm = ref.read(currentFarmProvider);
+      if (farm == null) return;
+
+      final code = await repository.getNextCode(
+        farmId: farm.id,
+        breedCode: _selectedBreed!.code,
+        gender: _selectedGender,
+      );
+      setState(() => _generatedCode = code);
+    } catch (e) {
+      // Fallback
+      final prefix = _selectedGender == Gender.male ? 'J' : 'B';
+      setState(() => _generatedCode = '${_selectedBreed!.code}-${prefix}01');
+    }
   }
 
   Future<void> _selectDate(BuildContext context, bool isBirthDate) async {
@@ -70,17 +96,21 @@ class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_generatedCode.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih ras terlebih dahulu')),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
 
     try {
       await ref.read(livestockNotifierProvider.notifier).create(
-        code: _codeController.text.trim(),
+        code: _generatedCode,
         gender: _selectedGender,
         housingId: _selectedHousingId,
-        name: _nameController.text.trim().isEmpty 
-            ? null 
-            : _nameController.text.trim(),
+        breedId: _selectedBreedId,
         birthDate: _birthDate,
         acquisitionDate: _acquisitionDate,
         acquisitionType: _selectedAcquisition,
@@ -98,7 +128,7 @@ class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${_selectedGender == Gender.female ? "Induk" : "Pejantan"} ${_codeController.text} berhasil ditambahkan!'),
+            content: Text('$_generatedCode berhasil ditambahkan!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -117,9 +147,62 @@ class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
     }
   }
 
+  void _showAddBreedDialog() {
+    final codeController = TextEditingController();
+    final nameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Tambah Ras'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: codeController,
+              textCapitalization: TextCapitalization.characters,
+              decoration: const InputDecoration(
+                labelText: 'Kode',
+                hintText: 'NZW, REX, etc.',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: nameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Nama',
+                hintText: 'New Zealand White',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (codeController.text.isEmpty || nameController.text.isEmpty) return;
+              
+              Navigator.pop(context);
+              await ref.read(breedNotifierProvider.notifier).create(
+                code: codeController.text.trim(),
+                name: nameController.text.trim(),
+              );
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final housingsAsync = ref.watch(availableHousingsProvider);
+    final breedsAsync = ref.watch(breedNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -144,7 +227,10 @@ class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
                     child: _GenderOption(
                       gender: Gender.female,
                       isSelected: _selectedGender == Gender.female,
-                      onTap: () => setState(() => _selectedGender = Gender.female),
+                      onTap: () {
+                        setState(() => _selectedGender = Gender.female);
+                        _updateGeneratedCode();
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -152,41 +238,86 @@ class _CreateLivestockScreenState extends ConsumerState<CreateLivestockScreen> {
                     child: _GenderOption(
                       gender: Gender.male,
                       isSelected: _selectedGender == Gender.male,
-                      onTap: () => setState(() => _selectedGender = Gender.male),
+                      onTap: () {
+                        setState(() => _selectedGender = Gender.male);
+                        _updateGeneratedCode();
+                      },
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Code
-              TextFormField(
-                controller: _codeController,
-                textCapitalization: TextCapitalization.characters,
-                decoration: InputDecoration(
-                  labelText: 'Kode *',
-                  hintText: _selectedGender == Gender.female ? 'I-001' : 'P-001',
-                  prefixIcon: const Icon(Icons.tag),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Kode tidak boleh kosong';
-                  }
-                  return null;
-                },
+              // Breed Selection
+              Row(
+                children: [
+                  Expanded(
+                    child: breedsAsync.when(
+                      loading: () => const LinearProgressIndicator(),
+                      error: (_, __) => const Text('Error loading breeds'),
+                      data: (breeds) => DropdownButtonFormField<String>(
+                        value: _selectedBreedId,
+                        decoration: const InputDecoration(
+                          labelText: 'Ras *',
+                          prefixIcon: Icon(Icons.category),
+                        ),
+                        hint: const Text('Pilih ras'),
+                        items: breeds.map((b) => DropdownMenuItem(
+                          value: b.id,
+                          child: Text(b.displayName),
+                        )).toList(),
+                        onChanged: (value) {
+                          final breed = breeds.firstWhere((b) => b.id == value);
+                          setState(() {
+                            _selectedBreedId = value;
+                            _selectedBreed = breed;
+                          });
+                          _updateGeneratedCode();
+                        },
+                        validator: (value) {
+                          if (value == null) return 'Pilih ras';
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _showAddBreedDialog,
+                    icon: const Icon(Icons.add_circle),
+                    tooltip: 'Tambah Ras',
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
-              // Name
-              TextFormField(
-                controller: _nameController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Nama (Opsional)',
-                  hintText: 'Contoh: Putih, Si Gendut',
-                  prefixIcon: Icon(Icons.pets),
+              // Generated Code Preview
+              if (_generatedCode.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.tag),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Kode', style: TextStyle(fontSize: 12)),
+                          Text(
+                            _generatedCode,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: 16),
 
               // Housing

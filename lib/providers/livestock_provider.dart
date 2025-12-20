@@ -131,3 +131,17 @@ final livestockNotifierProvider = StateNotifierProvider<LivestockNotifier, Async
   final farm = ref.watch(currentFarmProvider);
   return LivestockNotifier(repository, farm?.id);
 });
+
+/// Provider for generating next livestock code
+final nextLivestockCodeProvider = FutureProvider.family<String, ({String breedCode, Gender gender})>((ref, params) async {
+  final farm = ref.watch(currentFarmProvider);
+  if (farm == null) return '${params.breedCode}-${params.gender == Gender.male ? 'J' : 'B'}01';
+  
+  final repository = ref.watch(livestockRepositoryProvider);
+  return repository.getNextCode(
+    farmId: farm.id,
+    breedCode: params.breedCode,
+    gender: params.gender,
+  );
+});
+
