@@ -11,8 +11,8 @@ import '../../../providers/livestock_provider.dart';
 import '../../../providers/breeding_provider.dart';
 import '../../../providers/offspring_provider.dart';
 import '../../../providers/finance_provider.dart';
-import '../../../models/livestock.dart';
-import '../../../models/offspring.dart';
+import '../../../models/livestock.dart' show Gender;
+import '../../../models/offspring.dart' show OffspringStatus;
 
 class ReportsScreen extends ConsumerWidget {
   const ReportsScreen({super.key});
