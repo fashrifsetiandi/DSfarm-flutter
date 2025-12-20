@@ -58,7 +58,7 @@ class BreedingNotifier extends StateNotifier<AsyncValue<List<BreedingRecord>>> {
     this._offspringRepo,
     this._livestockRepo,
     this._farmId,
-  ) : super(const AsyncValue.loading()) {
+  ) : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadBreedings();
   }
 

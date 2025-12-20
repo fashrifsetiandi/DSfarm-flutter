@@ -45,7 +45,8 @@ class InventoryNotifier extends StateNotifier<AsyncValue<List<InventoryItem>>> {
   final InventoryRepository _repository;
   final String? _farmId;
 
-  InventoryNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  InventoryNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadItems();
   }
 

@@ -45,7 +45,8 @@ class OffspringNotifier extends StateNotifier<AsyncValue<List<Offspring>>> {
   final OffspringRepository _repository;
   final String? _farmId;
 
-  OffspringNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  OffspringNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadOffsprings();
   }
 

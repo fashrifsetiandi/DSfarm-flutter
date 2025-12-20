@@ -45,7 +45,8 @@ class HousingNotifier extends StateNotifier<AsyncValue<List<Housing>>> {
   final HousingRepository _repository;
   final String? _farmId;
 
-  HousingNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  HousingNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadHousings();
   }
 

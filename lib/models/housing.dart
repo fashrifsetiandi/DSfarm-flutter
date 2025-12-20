@@ -8,9 +8,11 @@ library;
 class Housing {
   final String id;
   final String farmId;
+  final String? blockId;   // Reference to block
+  final String? blockCode; // From joined query
+  final String? position;  // Position within block (e.g., "A-01")
   final String code;       // e.g., "K-001", "A-01"
   final String? name;
-  final String? block;     // Block/area grouping
   final int capacity;
   final HousingType type;
   final HousingStatus status;
@@ -24,9 +26,11 @@ class Housing {
   const Housing({
     required this.id,
     required this.farmId,
+    this.blockId,
+    this.blockCode,
+    this.position,
     required this.code,
     this.name,
-    this.block,
     this.capacity = 1,
     this.type = HousingType.individual,
     this.status = HousingStatus.active,
@@ -36,8 +40,8 @@ class Housing {
     this.currentOccupancy,
   });
 
-  /// Display name (use name if available, otherwise code)
-  String get displayName => name ?? code;
+  /// Display name (use position if has block, otherwise code)
+  String get displayName => position ?? name ?? code;
 
   /// Check if housing has available space
   bool get hasSpace => (currentOccupancy ?? 0) < capacity;
@@ -56,9 +60,11 @@ class Housing {
     return Housing(
       id: json['id'] as String,
       farmId: json['farm_id'] as String,
+      blockId: json['block_id'] as String?,
+      blockCode: json['blocks']?['code'] as String?,
+      position: json['position'] as String?,
       code: json['code'] as String,
       name: json['name'] as String?,
-      block: json['block'] as String?,
       capacity: json['capacity'] as int? ?? 1,
       type: HousingType.fromString(json['housing_type'] as String? ?? 'individual'),
       status: HousingStatus.fromString(json['status'] as String? ?? 'active'),
@@ -75,9 +81,10 @@ class Housing {
   Map<String, dynamic> toJson() {
     return {
       'farm_id': farmId,
+      'block_id': blockId,
+      'position': position,
       'code': code,
       'name': name,
-      'block': block,
       'capacity': capacity,
       'housing_type': type.value,
       'status': status.value,
@@ -89,9 +96,11 @@ class Housing {
   Housing copyWith({
     String? id,
     String? farmId,
+    String? blockId,
+    String? blockCode,
+    String? position,
     String? code,
     String? name,
-    String? block,
     int? capacity,
     HousingType? type,
     HousingStatus? status,
@@ -103,9 +112,11 @@ class Housing {
     return Housing(
       id: id ?? this.id,
       farmId: farmId ?? this.farmId,
+      blockId: blockId ?? this.blockId,
+      blockCode: blockCode ?? this.blockCode,
+      position: position ?? this.position,
       code: code ?? this.code,
       name: name ?? this.name,
-      block: block ?? this.block,
       capacity: capacity ?? this.capacity,
       type: type ?? this.type,
       status: status ?? this.status,

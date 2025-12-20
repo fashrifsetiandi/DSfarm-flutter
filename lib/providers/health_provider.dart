@@ -33,7 +33,8 @@ class HealthNotifier extends StateNotifier<AsyncValue<List<HealthRecord>>> {
   final HealthRecordRepository _repository;
   final String? _farmId;
 
-  HealthNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  HealthNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadRecords();
   }
 

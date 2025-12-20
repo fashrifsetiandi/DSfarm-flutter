@@ -45,7 +45,8 @@ class FinanceNotifier extends StateNotifier<AsyncValue<List<FinanceTransaction>>
   final FinanceRepository _repository;
   final String? _farmId;
 
-  FinanceNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  FinanceNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadTransactions();
   }
 
@@ -108,7 +109,8 @@ class FinanceCategoriesNotifier extends StateNotifier<AsyncValue<List<FinanceCat
   final FinanceRepository _repository;
   final String? _farmId;
 
-  FinanceCategoriesNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  FinanceCategoriesNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadCategories();
   }
 

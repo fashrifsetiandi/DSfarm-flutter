@@ -54,7 +54,8 @@ class LivestockNotifier extends StateNotifier<AsyncValue<List<Livestock>>> {
   final LivestockRepository _repository;
   final String? _farmId;
 
-  LivestockNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  LivestockNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadLivestocks();
   }
 

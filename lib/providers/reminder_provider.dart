@@ -45,7 +45,8 @@ class ReminderNotifier extends StateNotifier<AsyncValue<List<Reminder>>> {
   final ReminderRepository _repository;
   final String? _farmId;
 
-  ReminderNotifier(this._repository, this._farmId) : super(const AsyncValue.loading()) {
+  ReminderNotifier(this._repository, this._farmId) 
+      : super(_farmId == null ? const AsyncValue.data([]) : const AsyncValue.loading()) {
     if (_farmId != null) loadReminders();
   }
 

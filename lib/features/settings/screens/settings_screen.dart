@@ -7,6 +7,7 @@ library;
 import 'package:flutter/material.dart';
 
 import 'breeds_settings_screen.dart';
+import 'blocks_settings_screen.dart';
 import 'finance_categories_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -21,6 +22,15 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           const _SectionHeader(title: 'Data Master'),
+          _SettingsTile(
+            icon: Icons.apartment,
+            title: 'Block Kandang',
+            subtitle: 'Kelola gedung/area kandang',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BlocksSettingsScreen()),
+            ),
+          ),
           _SettingsTile(
             icon: Icons.pets,
             title: 'Ras (Breeds)',
