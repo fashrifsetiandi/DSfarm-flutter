@@ -27,11 +27,11 @@ class SupabaseService {
       // Untuk sekarang, pakai credentials yang sama dengan PWA
       url: const String.fromEnvironment(
         'SUPABASE_URL',
-        defaultValue: 'YOUR_SUPABASE_URL', // Ganti dengan URL Supabase Anda
+        defaultValue: 'https://hrvzimtclvyvfjwoezxa.supabase.co',
       ),
       anonKey: const String.fromEnvironment(
         'SUPABASE_ANON_KEY',
-        defaultValue: 'YOUR_ANON_KEY', // Ganti dengan Anon Key Supabase Anda
+        defaultValue: 'sb_publishable_9CsV2B0z-N8blMk_lpSIig_Xlzd87p6', // Ganti dengan Anon Key Supabase Anda
       ),
       authOptions: const FlutterAuthClientOptions(
         authFlowType: AuthFlowType.pkce,
