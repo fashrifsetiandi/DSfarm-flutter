@@ -316,19 +316,27 @@ class DashboardScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: item.color.withAlpha(50)),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(item.icon, color: item.color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              item.label,
-              style: TextStyle(
-                color: item.color,
-                fontWeight: FontWeight.w600,
-              ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(item.icon, color: item.color, size: 28),
+                const SizedBox(height: 4),
+                Text(
+                  item.label,
+                  style: TextStyle(
+                    color: item.color,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

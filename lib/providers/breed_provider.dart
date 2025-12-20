@@ -32,7 +32,9 @@ class BreedNotifier extends StateNotifier<AsyncValue<List<Breed>>> {
   }
 
   Future<void> loadBreeds() async {
+    print('BreedNotifier.loadBreeds called, farmId: $_farmId');
     if (_farmId == null) {
+      print('BreedNotifier: farmId is null, returning empty list');
       state = const AsyncValue.data([]);
       return;
     }
@@ -40,8 +42,10 @@ class BreedNotifier extends StateNotifier<AsyncValue<List<Breed>>> {
     state = const AsyncValue.loading();
     try {
       final breeds = await _repository.getByFarm(_farmId);
+      print('BreedNotifier: loaded ${breeds.length} breeds');
       state = AsyncValue.data(breeds);
     } catch (e, st) {
+      print('BreedNotifier ERROR: $e');
       state = AsyncValue.error(e, st);
     }
   }
