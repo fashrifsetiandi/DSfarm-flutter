@@ -1,59 +1,54 @@
 # 🛡️ DSFarm Flutter - Context Checkpoint
 
-> **Generated:** 2025-12-20 19:20 JST  
-> **Session:** Week 1 COMPLETE ✅
+> **Generated:** 2025-12-20 19:35 JST  
+> **Status:** Week 2 COMPLETE ✅
 
 ---
 
-## A. STATUS
+## A. PROGRESS
 
-| Item | Status |
+| Week | Status |
 |------|--------|
-| **Week 1** | ✅ **COMPLETE** |
-| **Auth Flow** | ✅ Working |
-| **Supabase** | ✅ Connected |
-| **Next** | Week 2 - Multi-Farm |
+| Week 1 - Auth | ✅ Complete |
+| Week 2 - Multi-Farm | ✅ Complete |
+| Week 3 - Kandang & Livestock | ⏳ Next |
 
 ---
 
-## B. WHAT'S DONE
+## B. WEEK 2 FILES CREATED
 
 ```
 lib/
-├── main.dart                    ✅
-├── app_router.dart              ✅
-├── core/services/supabase_service.dart  ✅ (with credentials)
-├── core/theme/app_theme.dart    ✅
-├── providers/auth_provider.dart ✅
-└── features/
-    ├── auth/screens/login_screen.dart    ✅
-    ├── auth/screens/register_screen.dart ✅
-    ├── farm_selector/screens/farm_list_screen.dart  ✅ (placeholder)
-    └── dashboard/screens/dashboard_screen.dart      ✅ (placeholder)
+├── models/farm.dart              ✅ Farm model + AnimalType
+├── repositories/farm_repository.dart  ✅ CRUD operations
+├── providers/farm_provider.dart  ✅ State management
+├── animal_modules/
+│   ├── base/animal_config.dart   ✅ Abstract base
+│   ├── base/animal_config_factory.dart ✅ Factory
+│   └── rabbit/rabbit_config.dart ✅ Kelinci settings
+└── features/farm_selector/
+    ├── farm_list_screen.dart     ✅ Farm list UI
+    └── create_farm_screen.dart   ✅ Create farm UI
 ```
 
 ---
 
-## C. GITHUB
+## C. DATABASE
 
-- **Repo:** https://github.com/fashrifsetiandi/DSfarm-flutter.git
-- **Branch:** `main`
-- **Latest:** `feat(week1): add Supabase credentials - auth flow working`
+- `farms` table ✅ Created with RLS policies
 
 ---
 
-## D. NEXT STEPS (Week 2)
+## D. NEXT (Week 3)
 
-1. Create `Farm` model
-2. Create `FarmRepository`
-3. Build proper `FarmListScreen`
-4. Build `CreateFarmScreen`
-5. Create `AnimalConfig` base class
-6. Create `RabbitConfig`
+1. Create `Housing` model (Kandang)
+2. Create `Livestock` model (Indukan)
+3. Housing CRUD & UI
+4. Livestock CRUD & UI
 
 ---
 
-## E. RESUME COMMAND
+## E. RESUME
 
 ```bash
 cd /Users/fashrif/code/DSfarm-learnflutter
@@ -62,14 +57,4 @@ flutter run -d chrome
 
 ---
 
-## F. KEY FILES TO READ
-
-| File | Purpose |
-|------|---------|
-| `.agent/CHECKPOINT.md` | This file |
-| `.agent/ARCHITECTURE.md` | DB schema, folder structure |
-| `.agent/ROADMAP.md` | 12-week timeline |
-
----
-
-**🔖 Week 2 ready to start!**
+**🔖 Copy to resume in new session!**
