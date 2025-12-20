@@ -19,6 +19,9 @@ import '../../offspring/screens/offspring_list_screen.dart';
 import '../../breeding/screens/breeding_list_screen.dart';
 import '../../finance/screens/finance_screen.dart';
 import '../../inventory/screens/inventory_screen.dart';
+import '../../health/screens/health_screen.dart';
+import '../../reminder/screens/reminder_screen.dart';
+import '../../reports/screens/reports_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final String farmId;
@@ -253,6 +256,33 @@ class DashboardScreen extends ConsumerWidget {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const InventoryScreen()),
+        ),
+      ),
+      _MenuItem(
+        icon: Icons.medical_services,
+        label: 'Kesehatan',
+        color: Colors.teal,
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const HealthScreen()),
+        ),
+      ),
+      _MenuItem(
+        icon: Icons.notifications,
+        label: 'Pengingat',
+        color: Colors.amber,
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ReminderScreen()),
+        ),
+      ),
+      _MenuItem(
+        icon: Icons.bar_chart,
+        label: 'Laporan',
+        color: Colors.indigo,
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ReportsScreen()),
         ),
       ),
     ];
