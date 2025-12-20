@@ -1,60 +1,57 @@
 # 🛡️ DSFarm Flutter - Context Checkpoint
 
-> **Generated:** 2025-12-20 19:35 JST  
-> **Status:** Week 2 COMPLETE ✅
+> **Generated:** 2025-12-20 19:57 JST  
+> **Status:** Week 3 COMPLETE ✅
 
 ---
 
-## A. PROGRESS
+## Progress
 
 | Week | Status |
 |------|--------|
-| Week 1 - Auth | ✅ Complete |
-| Week 2 - Multi-Farm | ✅ Complete |
-| Week 3 - Kandang & Livestock | ⏳ Next |
+| Week 1 - Auth | ✅ |
+| Week 2 - Multi-Farm | ✅ |
+| Week 3 - Kandang/Livestock | ✅ |
+| Week 4 - Offspring/Breeding | ⏳ Next |
 
 ---
 
-## B. WEEK 2 FILES CREATED
+## Week 3 Files
 
 ```
 lib/
-├── models/farm.dart              ✅ Farm model + AnimalType
-├── repositories/farm_repository.dart  ✅ CRUD operations
-├── providers/farm_provider.dart  ✅ State management
-├── animal_modules/
-│   ├── base/animal_config.dart   ✅ Abstract base
-│   ├── base/animal_config_factory.dart ✅ Factory
-│   └── rabbit/rabbit_config.dart ✅ Kelinci settings
-└── features/farm_selector/
-    ├── farm_list_screen.dart     ✅ Farm list UI
-    └── create_farm_screen.dart   ✅ Create farm UI
+├── models/
+│   ├── housing.dart       ✅
+│   └── livestock.dart     ✅
+├── repositories/
+│   ├── housing_repository.dart   ✅
+│   └── livestock_repository.dart ✅
+├── providers/
+│   ├── housing_provider.dart     ✅
+│   └── livestock_provider.dart   ✅
+└── features/
+    ├── dashboard/    (updated with stats/menu)
+    ├── housing/      (list + create screens)
+    └── livestock/    (list + create screens)
 ```
 
 ---
 
-## C. DATABASE
+## Database Tables
 
-- `farms` table ✅ Created with RLS policies
-
----
-
-## D. NEXT (Week 3)
-
-1. Create `Housing` model (Kandang)
-2. Create `Livestock` model (Indukan)
-3. Housing CRUD & UI
-4. Livestock CRUD & UI
+- `farms` ✅
+- `housings` ✅
+- `livestocks` ✅
+- `breeds` ✅
 
 ---
 
-## E. RESUME
+## Next (Week 4)
 
-```bash
-cd /Users/fashrif/code/DSfarm-learnflutter
-flutter run -d chrome
-```
+1. Offspring model & CRUD
+2. Breeding records
+3. Offspring tracking
 
 ---
 
-**🔖 Copy to resume in new session!**
+**Resume:** `cd /Users/fashrif/code/DSfarm-learnflutter && flutter run -d chrome`
