@@ -150,33 +150,25 @@ lib/
 
 ## 9. 🚦 Current Status
 
-**Active Phase:** Week 6+ - Block Kandang System  
-**Active Devlog:** `.agent/DEVLOG.md`
+**Active Phase:** Week 6+ - Finance Deep & Charts  
+**Documentation:** `.agent/docs/README.md` (unified devlog + belajar)
 
 ---
 
-## 10. 📝 Learning Material Format
+## 10. 📝 Documentation
 
-Saat membuat materi belajar baru di `.agent/belajar/`, gunakan format dari `standard-template.md`:
+Semua dokumentasi ada di satu file: `.agent/docs/README.md`
 
-### Struktur Wajib:
-1. **Header** - Phase/Week, Status, Date
-2. **Bridge Notes** - Konsep yang dipelajari (Teori + Praktek + Keywords)
-3. **Task Checklist** - Dengan traffic light status
-4. **Bugs & Fixes** - Dokumentasi error (dalam `<details>` tag)
-5. **Visual Changelog** - Screenshots before/after
-6. **Verification** - Definition of Done checklist
-
-### Naming Convention:
-```
-XX-nama-topik.md
-Contoh: 06-block-position-system.md
-```
+Isi:
+- Progress per fase (1-4)
+- Key learnings dengan code snippets
+- Commits history
+- Next features
 
 ### Akses Command:
 ```
-/learn [topic]  → Generate materi dengan template
-/devlog         → Update DEVLOG.md
+/docs        → Lihat dokumentasi
+/checkpoint  → Simpan progress sesi
 ```
 
 ---

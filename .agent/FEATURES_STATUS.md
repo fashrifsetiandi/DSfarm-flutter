@@ -55,15 +55,17 @@
 - [x] Finance categories management (CRUD)
 - [x] Block management (CRUD)
 
----
-
-## ❌ BELUM SELESAI
-
 ### Finance Deep ✅
 - [x] Auto-income dari penjualan offspring
 - [x] SellOffspringDialog dengan harga
 - [x] Trend chart (6 bulan terakhir)
 - [x] Finance Dashboard dengan grafik
+
+---
+
+## ❌ BELUM SELESAI
+
+### Finance Extra
 - [ ] Laporan bulanan/tahunan (export)
 - [ ] Budget planning
 
@@ -86,7 +88,7 @@
 - [ ] Calendar view
 
 ### Reports Deep
-- [ ] Charts/Grafik dengan fl_chart
+- [ ] Charts/Grafik dengan fl_chart ✅ (basic done)
 - [ ] Export PDF
 - [ ] Export Excel
 - [ ] Dashboard analytics
@@ -140,14 +142,15 @@
 | Livestock | 3/3 | 0 |
 | Breeding | 2/6 | 4 |
 | Offspring | 4/8 | 4 |
-| Finance | 4/8 | 4 |
+| Finance | 8/10 | 2 |
 | Inventory | 2/6 | 4 |
 | Health | 1/5 | 4 |
 | Reminders | 1/5 | 4 |
-| Reports | 1/5 | 4 |
+| Reports | 2/5 | 3 |
 | Settings | 4/8 | 4 |
-| **Total** | **37/73** | **36** |
+| **Total** | **42/75** | **33** |
 
 ---
 
-**Next Priority:** Finance Deep → Offspring Batch Sell → Reports Charts
+**Next Priority:** Offspring Batch Sell → Reports Export → Health Reminders
+
