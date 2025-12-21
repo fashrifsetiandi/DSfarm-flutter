@@ -38,9 +38,31 @@ class DashboardScreen extends ConsumerWidget {
     final housingsAsync = ref.watch(housingsProvider);
     final livestockCountAsync = ref.watch(livestockCountProvider);
 
+    // Auto-load farm from URL if not set
+    if (farm == null) {
+      final farmAsync = ref.watch(farmByIdProvider(farmId));
+      return farmAsync.when(
+        loading: () => const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+        error: (e, _) => Scaffold(
+          body: Center(child: Text('Error loading farm: $e')),
+        ),
+        data: (loadedFarm) {
+          if (loadedFarm != null) {
+            // Set the farm and rebuild
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref.read(currentFarmProvider.notifier).state = loadedFarm;
+            });
+          }
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(farm?.name ?? 'Dashboard'),
+        title: Text(farm.name),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/farms'),
