@@ -1,7 +1,7 @@
 # DSFarm Features Status
 
 > **Updated:** 2025-12-21  
-> **Total Features:** 45+ | **Done:** 28 | **Pending:** 17+
+> **Total Features:** 45+ | **Done:** 30 | **Pending:** 15+
 
 ---
 
@@ -27,6 +27,8 @@
 - [x] Block system untuk kandang
 - [x] Level system (Atas/Tengah/Bawah)
 - [x] Auto-code livestock `[BREED]-[J/B][SEQ]`
+- [x] Batch create kandang (unified form)
+- [x] Compact grid view dengan occupancy
 
 ### Week 4 - Breeding & Offspring
 - [x] Breeding records CRUD
@@ -105,10 +107,10 @@
 - [ ] Generasi tracking
 - [ ] Pedigree export
 
-### Kandang Deep
-- [ ] Batch create UI (banyak sekaligus)
-- [ ] Visual layout grid
-- [ ] Occupancy dashboard
+### Kandang Deep ✅
+- [x] Batch create UI (banyak sekaligus)
+- [x] Visual layout grid
+- [x] Occupancy dashboard
 - [ ] Maintenance schedule
 
 ### Breeding Deep
@@ -138,7 +140,7 @@
 |----------|------|---------|
 | Auth | 5/5 | 0 |
 | Farm | 4/4 | 0 |
-| Kandang | 6/10 | 4 |
+| Kandang | 9/10 | 1 |
 | Livestock | 3/3 | 0 |
 | Breeding | 2/6 | 4 |
 | Offspring | 4/8 | 4 |
@@ -148,7 +150,7 @@
 | Reminders | 1/5 | 4 |
 | Reports | 2/5 | 3 |
 | Settings | 4/8 | 4 |
-| **Total** | **42/75** | **33** |
+| **Total** | **45/77** | **32** |
 
 ---
 
