@@ -7,13 +7,14 @@
 
 ## 📖 Daftar Materi
 
-| No | Topik | File | Status |
-|----|-------|------|--------|
-| 1 | Scalability | `01-scalability.md` | ✅ |
-| 2 | Multi-tenancy | `02-multi-tenancy.md` | ✅ |
-| 3 | Config-Driven Architecture | `03-config-driven.md` | ✅ |
-| 5 | Auto-Generate Code Pattern | `05-auto-generate-code.md` | ✅ |
-| 6 | Block & Position System | `06-block-position-system.md` | ✅ |
+| No | Topik | File | Status | Keterangan |
+|----|-------|------|--------|------------|
+| 1 | Scalability | `01-scalability.md` | ✅ | |
+| 2 | Multi-tenancy | `02-multi-tenancy.md` | ✅ | |
+| 3 | Config-Driven Architecture | `03-config-driven.md` | ✅ | |
+| 5 | Auto-Generate | `05-auto-generate-code.md` | ✅ | [Livestock & Breeding](05-livestock-breeding.md) Indukan dan record kawin |
+| 06 | Block & Position | `06-block-position-system.md` | ✅ | [Block & Position](06-block-position-system.md) Sistem block kandang |
+| 07 | Finance Deep | `07-finance-deep.md` | ✅ | Auto-income, Charts |
 
 ---
 
