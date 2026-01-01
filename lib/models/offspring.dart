@@ -267,4 +267,9 @@ enum OffspringStatus {
       orElse: () => OffspringStatus.infarm,
     );
   }
+
+  bool get isActive => 
+      this != OffspringStatus.sold && 
+      this != OffspringStatus.deceased && 
+      this != OffspringStatus.promoted;
 }

@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 
 import '../../../models/offspring.dart';
 import '../../../providers/offspring_provider.dart';
+import '../../../core/utils/currency_formatter.dart';
 
 class BatchSellScreen extends ConsumerStatefulWidget {
   const BatchSellScreen({super.key});
@@ -151,7 +152,7 @@ class _BatchSellScreenState extends ConsumerState<BatchSellScreen> {
                           padding: const EdgeInsets.only(top: 8),
                           child: TextField(
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [ThousandsSeparatorInputFormatter()],
                             decoration: const InputDecoration(
                               labelText: 'Harga',
                               prefixText: 'Rp ',
@@ -159,7 +160,7 @@ class _BatchSellScreenState extends ConsumerState<BatchSellScreen> {
                               border: OutlineInputBorder(),
                             ),
                             onChanged: (val) {
-                              _prices[o.id] = double.tryParse(val) ?? 0;
+                              _prices[o.id] = parseFormattedPrice(val) ?? 0;
                               setState(() {});
                             },
                           ),

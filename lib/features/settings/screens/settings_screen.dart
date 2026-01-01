@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import '../../../core/widgets/dashboard_shell.dart';
 import 'breeds_settings_screen.dart';
 import 'blocks_settings_screen.dart';
+
 import 'finance_categories_settings_screen.dart';
+import 'status_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -48,6 +50,12 @@ class SettingsScreen extends StatelessWidget {
                   title: 'Ras (Breeds)',
                   subtitle: 'Kelola jenis/ras ternak',
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BreedsSettingsScreen())),
+                ),
+                _SettingsTile(
+                  icon: Icons.label_outline,
+                  title: 'Status Ternak',
+                  subtitle: 'Kelola status produktivitas',
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StatusSettingsScreen())),
                 ),
                 _SettingsTile(
                   icon: Icons.category,

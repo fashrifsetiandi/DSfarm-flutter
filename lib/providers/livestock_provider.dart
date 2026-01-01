@@ -93,7 +93,7 @@ class LivestockNotifier extends StateNotifier<AsyncValue<List<Livestock>>> {
     DateTime? acquisitionDate,
     AcquisitionType acquisitionType = AcquisitionType.purchased,
     double? purchasePrice,
-    LivestockStatus? status,
+    String? status,
     int generation = 1,
     double? weight,
     String? notes,
@@ -113,7 +113,7 @@ class LivestockNotifier extends StateNotifier<AsyncValue<List<Livestock>>> {
       acquisitionDate: acquisitionDate,
       acquisitionType: acquisitionType,
       purchasePrice: purchasePrice,
-      status: status ?? LivestockStatus.defaultFor(gender),
+      status: status ?? (gender == Gender.female ? 'betina_muda' : 'pejantan_muda'),
       generation: generation,
       weight: weight,
       notes: notes,
@@ -130,7 +130,7 @@ class LivestockNotifier extends StateNotifier<AsyncValue<List<Livestock>>> {
     await loadLivestocks();
   }
 
-  Future<void> updateStatus(String id, LivestockStatus status) async {
+  Future<void> updateStatus(String id, String status) async {
     await _repository.updateStatus(id, status);
     await loadLivestocks();
   }

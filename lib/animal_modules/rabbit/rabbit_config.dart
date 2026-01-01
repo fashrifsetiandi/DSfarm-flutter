@@ -55,7 +55,7 @@ class RabbitConfig extends AnimalConfig {
     'mating': 'Kawin',
     'palpation': 'Palpasi',
     'weaning': 'Sapih',
-    'culling': 'Afkir',
+
   };
 
   // ═══════════════════════════════════════════════════════════

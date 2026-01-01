@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 
 import '../../../models/offspring.dart';
 import '../../../providers/offspring_provider.dart';
+import '../../../core/utils/currency_formatter.dart';
 
 class SellOffspringDialog extends ConsumerStatefulWidget {
   final Offspring offspring;
@@ -129,15 +130,15 @@ class _SellOffspringDialogState extends ConsumerState<SellOffspringDialog> {
             TextFormField(
               controller: _priceController,
               keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: [ThousandsSeparatorInputFormatter()],
               decoration: const InputDecoration(
                 labelText: 'Harga Jual *',
                 prefixText: 'Rp ',
-                hintText: '50000',
+                hintText: '50.000',
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) return 'Harga wajib diisi';
-                final num = int.tryParse(value);
+                final num = parseFormattedPrice(value);
                 if (num == null || num <= 0) return 'Harga harus lebih dari 0';
                 return null;
               },

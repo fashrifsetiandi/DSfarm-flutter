@@ -445,7 +445,7 @@ class _HousingDetailSheet extends ConsumerWidget {
               ),
               title: Text(l.code),
               subtitle: l.name != null ? Text(l.name!) : null,
-              trailing: Text(l.status.displayName),
+              trailing: Text(l.status),
             )),
           const SizedBox(height: 20),
         ],

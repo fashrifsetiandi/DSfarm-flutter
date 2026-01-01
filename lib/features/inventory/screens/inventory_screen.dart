@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/dashboard_shell.dart';
 import '../../../models/inventory.dart';
 import '../../../providers/inventory_provider.dart';
+import '../../../core/utils/currency_formatter.dart';
 
 class InventoryScreen extends ConsumerStatefulWidget {
   const InventoryScreen({super.key});
@@ -157,6 +158,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen>
                   TextField(
                     controller: priceController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [ThousandsSeparatorInputFormatter()],
                     decoration: const InputDecoration(
                       labelText: 'Harga Satuan (Opsional)',
                       prefixText: 'Rp ',
@@ -183,7 +185,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen>
                         : unitController.text.trim(),
                     quantity: double.tryParse(qtyController.text) ?? 0,
                     minimumStock: double.tryParse(minController.text),
-                    unitPrice: double.tryParse(priceController.text),
+                    unitPrice: parseFormattedPrice(priceController.text),
                   );
 
                   if (context.mounted) {

@@ -18,7 +18,7 @@ class Livestock {
   final DateTime? acquisitionDate;
   final AcquisitionType acquisitionType;
   final double? purchasePrice;
-  final LivestockStatus status;
+  final String status; // Dynamic status code (e.g., 'betina_muda', 'sold')
   final int generation;
   final double? weight;     // Current weight in kg
   final String? notes;
@@ -48,7 +48,7 @@ class Livestock {
     this.acquisitionDate,
     this.acquisitionType = AcquisitionType.purchased,
     this.purchasePrice,
-    this.status = LivestockStatus.betinaMuda,
+    this.status = 'betina_muda',
     this.generation = 1,
     this.weight,
     this.notes,
@@ -118,28 +118,6 @@ class Livestock {
   /// Check if male (for breeding purposes)
   bool get isMale => gender == Gender.male;
 
-  /// Check if livestock is still in farm (not sold/deceased/culled)
-  bool get isInFarm => ![
-    LivestockStatus.sold,
-    LivestockStatus.deceased,
-    LivestockStatus.culled,
-  ].contains(status);
-
-  /// Get farm status display name (shows specific exit reason if not in farm)
-  String get farmStatusDisplay {
-    if (isInFarm) return 'InFarm';
-    switch (status) {
-      case LivestockStatus.sold:
-        return 'Terjual';
-      case LivestockStatus.deceased:
-        return 'Mati';
-      case LivestockStatus.culled:
-        return 'Afkir';
-      default:
-        return 'Keluar';
-    }
-  }
-
   /// Get gender prefix for code (J = Jantan, B = Betina)
   String get genderPrefix => gender == Gender.male ? 'J' : 'B';
 
@@ -172,7 +150,7 @@ class Livestock {
         json['acquisition_type'] as String? ?? 'purchased',
       ),
       purchasePrice: (json['purchase_price'] as num?)?.toDouble(),
-      status: LivestockStatus.fromString(json['status'] as String? ?? 'betina_muda'),
+      status: json['status'] as String? ?? 'betina_muda',
       generation: json['generation'] as int? ?? 1,
       weight: (json['weight'] as num?)?.toDouble(),
       notes: json['notes'] as String?,
@@ -202,7 +180,7 @@ class Livestock {
       'acquisition_date': acquisitionDate?.toIso8601String().split('T').first,
       'acquisition_type': acquisitionType.value,
       'purchase_price': purchasePrice,
-      'status': status.value,
+      'status': status,
       'generation': generation,
       'weight': weight,
       'notes': notes,
@@ -226,7 +204,7 @@ class Livestock {
     DateTime? acquisitionDate,
     AcquisitionType? acquisitionType,
     double? purchasePrice,
-    LivestockStatus? status,
+    String? status,
     int? generation,
     double? weight,
     String? notes,
@@ -305,75 +283,6 @@ enum AcquisitionType {
     return AcquisitionType.values.firstWhere(
       (e) => e.value == value,
       orElse: () => AcquisitionType.purchased,
-    );
-  }
-}
-
-/// Livestock status enum (includes breeding status)
-/// 
-/// Status dibedakan berdasarkan gender:
-/// - Female: betinaMuda, siapKawin, bunting, menyusui, istirahat
-/// - Male: pejantanMuda, pejantanAktif, istirahat
-/// - General: sold, deceased, culled
-enum LivestockStatus {
-  // Female breeding statuses
-  betinaMuda('betina_muda', 'Betina Muda'),
-  siapKawin('siap_kawin', 'Siap Kawin'),
-  bunting('bunting', 'Bunting'),
-  menyusui('menyusui', 'Menyusui'),
-  
-  // Male breeding statuses
-  pejantanMuda('pejantan_muda', 'Pejantan Muda'),
-  pejantanAktif('pejantan_aktif', 'Pejantan Aktif'),
-  
-  // Gender-neutral statuses
-  istirahat('istirahat', 'Istirahat'),
-  sold('sold', 'Terjual'),
-  deceased('deceased', 'Mati'),
-  culled('culled', 'Afkir');
-
-  final String value;
-  final String displayName;
-
-  const LivestockStatus(this.value, this.displayName);
-
-  /// Check if this status is valid for female
-  bool get isValidForFemale => 
-      this == betinaMuda || 
-      this == siapKawin || 
-      this == bunting || 
-      this == menyusui || 
-      this == istirahat ||
-      this == sold ||
-      this == deceased ||
-      this == culled;
-
-  /// Check if this status is valid for male
-  bool get isValidForMale => 
-      this == pejantanMuda || 
-      this == pejantanAktif || 
-      this == istirahat ||
-      this == sold ||
-      this == deceased ||
-      this == culled;
-
-  /// Get statuses valid for a specific gender
-  static List<LivestockStatus> forGender(Gender gender) {
-    if (gender == Gender.female) {
-      return [betinaMuda, siapKawin, bunting, menyusui, istirahat, sold, deceased, culled];
-    }
-    return [pejantanMuda, pejantanAktif, istirahat, sold, deceased, culled];
-  }
-
-  /// Get default status for a gender
-  static LivestockStatus defaultFor(Gender gender) {
-    return gender == Gender.female ? betinaMuda : pejantanMuda;
-  }
-
-  static LivestockStatus fromString(String value) {
-    return LivestockStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => LivestockStatus.betinaMuda,
     );
   }
 }

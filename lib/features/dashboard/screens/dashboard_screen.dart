@@ -711,7 +711,7 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
     livestockAsync.whenData((list) {
       females = list.where((l) => l.gender == Gender.female).length;
       males = list.where((l) => l.gender == Gender.male).length;
-      pregnant = list.where((l) => l.status == LivestockStatus.bunting).length;
+      pregnant = list.where((l) => l.status == 'bunting').length;
     });
     
     offspringAsync.whenData((list) => offspring = list.length);

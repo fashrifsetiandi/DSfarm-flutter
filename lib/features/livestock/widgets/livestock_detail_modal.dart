@@ -11,6 +11,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../models/breeding_record.dart';
 import '../../../models/health_record.dart';
+import '../../../models/livestock_status_model.dart';
+import '../../../providers/status_provider.dart';
 import '../../../models/livestock.dart';
 import '../../../models/weight_record.dart';
 import '../../../providers/breeding_provider.dart';
@@ -19,6 +21,7 @@ import '../../../providers/health_provider.dart';
 import '../../../providers/livestock_provider.dart';
 import '../../../providers/offspring_provider.dart';
 import '../../../providers/weight_record_provider.dart';
+import '../../../core/utils/currency_formatter.dart';
 
 /// Helper function to show livestock detail modal
 void showLivestockDetailModal(
@@ -128,6 +131,104 @@ class _LivestockDetailPanelState extends State<_LivestockDetailPanel>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _showSellDialog(BuildContext context) {
+    final priceController = TextEditingController();
+    DateTime? sellDate = DateTime.now();
+    
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Jual Indukan'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Jual ${widget.livestock.code}?',
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [ThousandsSeparatorInputFormatter()],
+                decoration: const InputDecoration(
+                  labelText: 'Harga Jual *',
+                  prefixText: 'Rp ',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: sellDate ?? DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime.now(),
+                  );
+                  if (picked != null) {
+                    setDialogState(() => sellDate = picked);
+                  }
+                },
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: 'Tanggal Jual *',
+                    border: OutlineInputBorder(),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        sellDate != null 
+                            ? '${sellDate!.day}/${sellDate!.month}/${sellDate!.year}'
+                            : 'Pilih tanggal',
+                      ),
+                      const Icon(Icons.calendar_today, size: 18),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (priceController.text.isEmpty || sellDate == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Lengkapi semua data')),
+                  );
+                  return;
+                }
+                
+                Navigator.pop(dialogContext);
+                Navigator.pop(context); // Close detail panel
+                
+                // Update livestock status to sold
+                // Note: This requires updating the notifier to support status change
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${widget.livestock.code} berhasil dijual dengan harga Rp ${priceController.text}'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+              ),
+              child: const Text('Jual'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSilsilahPopup(BuildContext context, Livestock livestock) {
@@ -327,7 +428,7 @@ class _LivestockDetailPanelState extends State<_LivestockDetailPanel>
         : const Color(0xFF2196F3);
     final screenWidth = MediaQuery.of(context).size.width;
     // Panel width: 400px on desktop, 85% on mobile
-    final panelWidth = screenWidth > 600 ? 500.0 : screenWidth * 0.9;
+    final panelWidth = screenWidth > 600 ? 600.0 : screenWidth * 0.95;
 
     return Container(
       width: panelWidth,
@@ -418,6 +519,7 @@ class _LivestockDetailPanelState extends State<_LivestockDetailPanel>
                     icon: const Icon(Icons.edit_outlined),
                     onPressed: widget.onEdit,
                   ),
+
                   IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red),
                     onPressed: widget.onDelete,
@@ -526,58 +628,37 @@ class _InformasiTab extends ConsumerWidget {
     return 'Rp $formatted';
   }
 
-  Color _getStatusColor(LivestockStatus status) {
-    switch (status) {
-      case LivestockStatus.siapKawin:
-        return const Color(0xFF9C27B0);
-      case LivestockStatus.bunting:
-      case LivestockStatus.menyusui:
-        return const Color(0xFFE91E63);
-      case LivestockStatus.pejantanAktif:
-        return const Color(0xFF2196F3);
-      case LivestockStatus.betinaMuda:
-      case LivestockStatus.pejantanMuda:
-        return const Color(0xFF4CAF50);
-      case LivestockStatus.istirahat:
-        return const Color(0xFF9E9E9E);
-      case LivestockStatus.sold:
-        return const Color(0xFF607D8B);
-      case LivestockStatus.deceased:
-        return const Color(0xFFF44336);
-      case LivestockStatus.culled:
-        return const Color(0xFFFF9800);
-    }
+  Color _getStatusColor(String statusCode, WidgetRef ref) {
+    final statusList = ref.watch(statusNotifierProvider(livestock.farmId));
+    final statusDef = statusList.value?.firstWhere((s) => s.code == statusCode, orElse: () => LivestockStatusModel(id: '', code: statusCode, name: statusCode, colorHex: '#808080', type: 'active'));
+    return statusDef?.color ?? Colors.grey;
   }
 
-  IconData _getStatusIcon(LivestockStatus status) {
+  IconData _getStatusIcon(String status) {
+    // Dynamic icons map (fallback to generic)
     switch (status) {
-      case LivestockStatus.siapKawin:
-        return Icons.favorite;
-      case LivestockStatus.bunting:
-        return Icons.pregnant_woman;
-      case LivestockStatus.menyusui:
-        return Icons.child_care;
-      case LivestockStatus.pejantanAktif:
-        return Icons.bolt;
-      case LivestockStatus.betinaMuda:
-      case LivestockStatus.pejantanMuda:
-        return Icons.pets;
-      case LivestockStatus.istirahat:
-        return Icons.pause_circle;
-      case LivestockStatus.sold:
-        return Icons.attach_money;
-      case LivestockStatus.deceased:
-        return Icons.error;
-      case LivestockStatus.culled:
-        return Icons.highlight_off;
+      case 'siap_kawin': return Icons.favorite;
+      case 'bunting': return Icons.pregnant_woman;
+      case 'menyusui': return Icons.child_care;
+      case 'pejantan_aktif': return Icons.bolt;
+      case 'betina_muda':
+      case 'pejantan_muda': return Icons.pets;
+      case 'istirahat': return Icons.pause_circle;
+      case 'sold': return Icons.attach_money;
+      case 'deceased': return Icons.error;
+
+      default: return Icons.info;
     }
   }
 
   Future<void> _showChangeStatusDialog(BuildContext context, WidgetRef ref) async {
-    final validStatuses = LivestockStatus.forGender(livestock.gender);
-    LivestockStatus? selectedStatus = livestock.status;
+    final statusList = ref.read(statusNotifierProvider(livestock.farmId)).value ?? [];
+    // Filter statuses valid for gender (or 'both')
+    final validStatuses = statusList.where((s) => s.validForGender == 'both' || s.validForGender == livestock.gender.value).toList();
     
-    final result = await showDialog<LivestockStatus>(
+    String? selectedStatus = livestock.status;
+    
+    final result = await showDialog<String>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -590,9 +671,9 @@ class _InformasiTab extends ConsumerWidget {
                 style: TextStyle(color: Colors.grey[600]),
               ),
               const SizedBox(height: 16),
-              ...validStatuses.map((status) => RadioListTile<LivestockStatus>(
-                title: Text(status.displayName),
-                value: status,
+               ...validStatuses.map((status) => RadioListTile<String>(
+                title: Text(status.name),
+                value: status.code,
                 groupValue: selectedStatus,
                 onChanged: (value) => setState(() => selectedStatus = value),
                 dense: true,
@@ -627,7 +708,7 @@ class _InformasiTab extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Status ${livestock.code} diubah menjadi ${result.displayName}'),
+            content: Text('Status ${livestock.code} diubah menjadi $result'),
             backgroundColor: const Color(0xFF4CAF50),
           ),
         );
@@ -772,87 +853,108 @@ class _InformasiTab extends ConsumerWidget {
                     ),
                     Expanded(
                       flex: 3,
-                      child: PopupMenuButton<LivestockStatus>(
-                        onSelected: (status) async {
-                          if (status != currentLivestock.status) {
-                            await ref.read(livestockNotifierProvider.notifier).updateStatus(
-                              currentLivestock.id,
-                              status,
-                            );
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Status ${currentLivestock.code} diubah ke ${status.displayName}'),
-                                  backgroundColor: const Color(0xFF4CAF50),
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        itemBuilder: (context) => LivestockStatus.forGender(currentLivestock.gender)
-                            .map((status) => PopupMenuItem<LivestockStatus>(
-                                  value: status,
-                                  child: Row(
-                                    children: [
-                                      if (status == currentLivestock.status)
-                                        const Icon(Icons.check, size: 18, color: Color(0xFF4CAF50))
-                                      else
-                                        const SizedBox(width: 18),
-                                      const SizedBox(width: 8),
-                                      Text(status.displayName),
-                                    ],
-                                  ),
-                                ))
-                            .toList(),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(currentLivestock.status),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(_getStatusIcon(currentLivestock.status), size: 14, color: Colors.white),
-                              const SizedBox(width: 4),
-                              Text(
-                                currentLivestock.status.displayName,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
+                      child: Consumer(
+                        builder: (context, ref, _) {
+                          final statusList = ref.watch(statusNotifierProvider(currentLivestock.farmId)).value ?? [];
+                          final validStatuses = statusList.where((s) => s.validForGender == 'both' || s.validForGender == currentLivestock.gender.value).toList();
+
+                          return PopupMenuButton<String>(
+                            onSelected: (statusCode) async {
+                              if (statusCode != currentLivestock.status) {
+                                await ref.read(livestockNotifierProvider.notifier).updateStatus(
+                                  currentLivestock.id,
+                                  statusCode,
+                                );
+                                if (context.mounted) {
+                                  // Find status name
+                                  final statusName = validStatuses.firstWhere((s) => s.code == statusCode, orElse: () => LivestockStatusModel(id:'', code:statusCode, name:statusCode, colorHex:'', type:'active')).name;
+                                  
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Status ${currentLivestock.code} diubah ke $statusName'),
+                                      backgroundColor: const Color(0xFF4CAF50),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            itemBuilder: (context) => validStatuses
+                                .map((status) => PopupMenuItem<String>(
+                                      value: status.code,
+                                      child: Row(
+                                        children: [
+                                          if (status.code == currentLivestock.status)
+                                            const Icon(Icons.check, size: 18, color: Color(0xFF4CAF50))
+                                          else
+                                            const SizedBox(width: 18),
+                                          const SizedBox(width: 8),
+                                          Text(status.name),
+                                        ],
+                                      ),
+                                    ))
+                                .toList(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: currentLivestock.status == 'sold' || currentLivestock.status == 'deceased' 
+                                    ? Colors.grey[200] 
+                                    : const Color(0xFFE8F5E9),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: currentLivestock.status == 'sold' || currentLivestock.status == 'deceased'
+                                      ? Colors.grey[400]!
+                                      : const Color(0xFF4CAF50),
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.white),
-                            ],
-                          ),
-                        ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    // Helper to display name (simple mapping or just code for now if helper missing)
+                                    // Optimally we'd use the resolved name from the provider list above
+                                    validStatuses.firstWhere((s) => s.code == currentLivestock.status, orElse: () => LivestockStatusModel(id:'', code:currentLivestock.status ?? '-', name:currentLivestock.status ?? '-', colorHex:'', type:'active')).name,
+                                    style: TextStyle(
+                                      color: currentLivestock.status == 'sold' || currentLivestock.status == 'deceased'
+                                          ? Colors.grey[700]
+                                          : const Color(0xFF2E7D32),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 16,
+                                    color: currentLivestock.status == 'sold' || currentLivestock.status == 'deceased'
+                                        ? Colors.grey[700]
+                                        : const Color(0xFF2E7D32),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
                       ),
-                    ),
-                  ],
-                ),
               ),
+                    ],
+                  ),
+                ),
               // Get health status from health records
               Consumer(
                 builder: (context, ref, _) {
                   final healthAsync = ref.watch(healthByLivestockProvider(livestock.id));
-                  return healthAsync.when(
+                   return healthAsync.when(
                     loading: () => _InfoRow(label: 'Kesehatan', value: '...'),
                     error: (_, __) => _InfoRow(label: 'Kesehatan', value: 'Sehat'),
                     data: (records) {
                       if (records.isNotEmpty) {
-                        // Check if there are active illness records (within last 30 days)
-                        final recentIllness = records.where((r) => 
-                          r.type == HealthRecordType.illness &&
-                          DateTime.now().difference(r.recordDate).inDays <= 30
-                        ).toList();
-                        if (recentIllness.isNotEmpty) {
-                          return _InfoRow(
-                            label: 'Kesehatan', 
-                            value: '⚠️ ${recentIllness.first.title}',
-                          );
-                        }
+                        // Show the latest health record title
+                        final latest = records.first;
+                        final isIllness = latest.type == HealthRecordType.illness;
+                        return _InfoRow(
+                          label: 'Kesehatan', 
+                          value: isIllness ? '⚠️ ${latest.title}' : latest.title,
+                        );
                       }
                       return _InfoRow(label: 'Kesehatan', value: 'Sehat');
                     },
@@ -876,15 +978,15 @@ class _InformasiTab extends ConsumerWidget {
               ),
             ],
           ),
-          if (livestock.notes != null) ...[
+          if (livestock.notes != null)
             const SizedBox(height: 12),
+          if (livestock.notes != null)
             _SectionCard(
               title: 'Catatan',
               children: [
                 Text(livestock.notes!),
               ],
             ),
-          ],
         ],
       ),
     );

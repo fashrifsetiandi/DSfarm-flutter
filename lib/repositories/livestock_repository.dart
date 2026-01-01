@@ -22,7 +22,6 @@ class LivestockRepository {
           father:father_id(code)
         ''')
         .eq('farm_id', farmId)
-        .not('status', 'in', '(sold,deceased,culled)')
         .order('code');
 
     return (response as List)
@@ -91,14 +90,16 @@ class LivestockRepository {
     DateTime? acquisitionDate,
     AcquisitionType acquisitionType = AcquisitionType.purchased,
     double? purchasePrice,
-    LivestockStatus? status,
+    String? status,
     int generation = 1,
     double? weight,
     String? notes,
     String? motherId,
     String? fatherId,
   }) async {
-    final effectiveStatus = status ?? LivestockStatus.defaultFor(gender);
+    // Default statuses based on legacy enum logic
+    final defaultStatus = gender == Gender.female ? 'betina_muda' : 'pejantan_muda';
+    final effectiveStatus = status ?? defaultStatus;
     
     final response = await SupabaseService.client
         .from(_tableName)
@@ -113,7 +114,7 @@ class LivestockRepository {
           'acquisition_date': acquisitionDate?.toIso8601String().split('T').first,
           'acquisition_type': acquisitionType.value,
           'purchase_price': purchasePrice,
-          'status': effectiveStatus.value,
+          'status': effectiveStatus,
           'generation': generation,
           'weight': weight,
           'notes': notes,
@@ -146,7 +147,7 @@ class LivestockRepository {
           'acquisition_date': livestock.acquisitionDate?.toIso8601String().split('T').first,
           'acquisition_type': livestock.acquisitionType.value,
           'purchase_price': livestock.purchasePrice,
-          'status': livestock.status.value,
+          'status': livestock.status,
           'generation': livestock.generation,
           'weight': livestock.weight,
           'notes': livestock.notes,
@@ -165,11 +166,11 @@ class LivestockRepository {
   }
 
   /// Update livestock status
-  Future<void> updateStatus(String id, LivestockStatus status) async {
+  Future<void> updateStatus(String id, String status) async {
     await SupabaseService.client
         .from(_tableName)
         .update({
-          'status': status.value,
+          'status': status,
           'updated_at': DateTime.now().toIso8601String(),
         })
         .eq('id', id);
